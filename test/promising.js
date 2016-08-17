@@ -3,7 +3,7 @@ import assert from 'assert';
 describe('Promise class method', () => {
   describe('Promise.resolve', () => {
     it('returns a Promise resolved with a given value', (done) => {
-      const promise = Promise.resolve(); // change me
+      const promise = Promise.resolve('foo'); // change me
 
       promise
         .then((val) => {
@@ -15,7 +15,7 @@ describe('Promise class method', () => {
 
     it('if given an unresolved promise, waits for it to resolve first', (done) => {
       const unresolvedPromise = new Promise((resolve) => {
-        setTimeout(() => { resolve(/* change me */) }, 1500);
+        setTimeout(() => { resolve('foo') }, 1500);
       });
       const promise = Promise.resolve(unresolvedPromise);
 
@@ -32,7 +32,7 @@ describe('Promise class method', () => {
 
   describe('Promise.reject', () => {
     it('returns a Promise rejected with a reason', (done) => {
-      Promise.reject() // change me
+      Promise.reject('A reason')
         .then((val) => {
           done(new Error('Should not come here'));
         })
@@ -49,7 +49,7 @@ describe('Promise class method', () => {
           done(new Error('Should not come here'));
         })
         .catch((err) => {
-          assert.strictEqual(err.message, 'REPLACE ME');
+          assert.strictEqual(err.message, 'An error message');
           done();
         })
         .catch(done);
@@ -63,7 +63,7 @@ describe('Promise class method', () => {
       var p3 = new Promise((resolve) => {
         setTimeout(resolve, 1000, "foo");
       });
-      const promise = Promise.all(); // change me
+      const promise = Promise.all([p1, p2, p3]);
 
       promise
         .then((val) => {
@@ -99,7 +99,8 @@ describe('Promise class method', () => {
         }, 2500, "four");
       });
       var p5 = new Promise((resolve, reject) => {
-        reject(""); // CHANGE ME
+        reject("REASON");
+         // CHANGE ME
       });
 
       Promise.all([p1, p2, p3, p4, p5])
@@ -109,6 +110,7 @@ describe('Promise class method', () => {
         }, reason => {
           assert.deepEqual(ary, [], 'Promise.all fails fast');
           assert.strictEqual(reason, 'REASON');
+          done();
         })
         .catch(done);
     });
@@ -121,7 +123,7 @@ describe('Promise class method', () => {
           setTimeout(() => resolve('foo'), 1000);
         }),
         new Promise(function(resolve) {
-          setTimeout(() => resolve('bar'), 250); // change me
+          setTimeout(() => resolve('bar'), 2000);
         }),
       ])
         .then((result) => {
@@ -137,7 +139,7 @@ describe('Promise class method', () => {
           setTimeout(() => resolve(true), 5000); // something that takes too long
         }),
         new Promise(function(resolve, reject) {
-          setTimeout(() => reject(new Error('Request took too long')), /* change me to a smaller value */5000);
+          setTimeout(() => reject(new Error('Request took too long')), 1000);
         })
       ])
         .then((result) => {
@@ -155,17 +157,18 @@ describe('Promise instance methods', function () {
   describe('.then', function () {
     it('the second param to .then handles rejection', function (done) {
       new Promise(function (resolve, reject) {
-        resolve(1); // change me
+        reject('REASON FOR ERROR'); // change me
       }).then(function () {
         done(new Error('This promise should have been rejected'));
       }, function (reason) {
         assert.strictEqual(reason, 'REASON FOR ERROR');
+        done();
       }).catch(done);
     });
 
     it('the second param to .then can catch error from the previous promise', function (done) {
       new Promise(function (resolve, reject) {
-        reject(new Error('Oops')); // change me
+        reject(new Error('FIX ME')); // change me
       })
         .then(function () {
           throw new Error('From then');
@@ -178,7 +181,7 @@ describe('Promise instance methods', function () {
 
     it('but .catch is the preferred way to handle rejection', function (done) {
       new Promise(function (resolve, reject) {
-        resolve(1); // change me
+        reject('REASON FOR ERROR') // change me
       }).then(function () {
         done(new Error('This promise should have been rejected'));
       }).catch(function (reason) {
@@ -190,15 +193,16 @@ describe('Promise instance methods', function () {
     it('can be chained to pass on computation results to another .then', function (done) {
       Promise.resolve()
         .then(() => {
-          return 1; // change me
+          return 2; // change me
+
         })
         .then((result) => {
           assert.strictEqual(result, 2);
-
+          done();
           // Returning a promise here will cause the next .then callback to only be called
           // when this promise is resolved.
           return new Promise((resolve) => {
-            setTimeout(() => { /* change me */
+            setTimeout(() => { return true
             }, 1000);
           });
         })
@@ -219,7 +223,7 @@ describe('Promise instance methods', function () {
       // Chaining .then or .catch on promise creates a NEW PROMISE.
       Promise.all([p2, p3, p4])
         .then((result) => {
-          assert.deepEqual(result, []); // FIX ME
+          assert.deepEqual(result, [2,3,4]); // FIX ME
           done();
         })
         .catch(done);
